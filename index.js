@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 8080;
 let sensorData = { tiempo: "00:00:00", distancia: 0 };
 
 // Configuración para procesar datos JSON
