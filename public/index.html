@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Datos</title>
+</head>
+<body>
+    <h1>Datos del Sensor</h1>
+    <p id="sensorData">Esperando datos...</p>
+
+    <script>
+        function fetchData() {
+            // Realiza una petición GET al servidor para obtener los datos
+            fetch('/datos')
+                .then(response => response.json())
+                .then(data => {
+                    // Actualiza el contenido del elemento con id "sensorData"
+                    document.getElementById('sensorData').innerHTML = `Tiempo: ${data.tiempo}, Distancia: ${data.distancia} cm`;
+                })
+                .catch(error => {
+                    console.error('Error al obtener datos:', error);
+                });
+        }
+
+        // Actualiza los datos cada segundo
+        setInterval(fetchData, 1000);
+
+        // Realiza la primera llamada a fetchData para obtener los datos inmediatamente
+        fetchData();
+    </script>
+</body>
+</html>
