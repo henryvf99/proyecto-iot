@@ -4,19 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualización de Datos</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #2c3e50, #1f2b38);
+            color: #fff;
+            text-align: center;
+        }
+
+        h1 {
+            color: #3498db;
+        }
+
+        #sensorTable {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #sensorTable th, #sensorTable td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #sensorData {
+            font-size: 1.2em;
+        }
+
+        #tank {
+            width: 50px;
+            height: 100px;
+            background-color: #3498db;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #water {
+            width: 100%;
+            height: 0;
+            background-color: #87CEEB; /* Color del agua */
+            position: absolute;
+            bottom: 0;
+            transition: height 0.5s; /* Agregamos una transición para que sea más suave el cambio */
+        }
+
+        #sensorImage {
+            width: 50%;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <!-- Agregado el enlace para la fuente Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
 </head>
 <body>
     <h1>Datos del Sensor</h1>
-    <p id="sensorData">Esperando datos...</p>
+
+    <table id="sensorTable">
+        <tr>
+            <th>Tiempo</th>
+            <th>Distancia (cm)</th>
+        </tr>
+        <tr id="sensorData">
+            <td colspan="2">Esperando datos...</td>
+        </tr>
+    </table>
+
+    <div id="tank">
+        <div id="water"></div>
+    </div>
+
+    <img id="sensorImage" src="https://www.eneka.com.uy/images/stories/virtuemart/product/mk0005.jpg" alt="Imagen del sensor">
 
     <script>
+        function updateTank(distance) {
+            const tankHeight = 100; // Altura máxima del tanque en pixeles
+            const maxDistance = 100; // Distancia máxima que puede medir el sensor en centímetros
+
+            // Calcula la altura del agua en función de la distancia
+            const waterHeight = tankHeight * (1 - distance / maxDistance);
+
+            // Actualiza la altura del agua en el tanque
+            document.getElementById('water').style.height = `${waterHeight}px`;
+        }
+
         function fetchData() {
             // Realiza una petición GET al servidor para obtener los datos
             fetch('/datos')
                 .then(response => response.json())
                 .then(data => {
-                    // Actualiza el contenido del elemento con id "sensorData"
-                    document.getElementById('sensorData').innerHTML = `Tiempo: ${data.tiempo}, Distancia: ${data.distancia} cm`;
+                    // Actualiza el contenido de las celdas de la tabla
+                    document.getElementById('sensorData').innerHTML = `<td>${data.tiempo}</td><td>${data.distancia}</td>`;
+
+                    // Actualiza el nivel del agua en el tanque
+                    updateTank(data.distancia);
                 })
                 .catch(error => {
                     console.error('Error al obtener datos:', error);
