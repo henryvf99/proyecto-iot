@@ -4,6 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualización de Datos</title>
+
+    <style>
+        body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom right, #2c3e50, #1f2b38);
+        color: #fff;
+        text-align: center;
+        }
+
+        h1 {
+            color: #3498db;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .dashboard-section {
+            width: 45%; /* Adjust the width as needed */
+            margin: 10px;
+            padding: 20px;
+            background-color: #34495e; /* Adjust the background color as needed */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-section h2 {
+            color: #3498db;
+        }
+
+        .dashboard-section p {
+            font-size: 1.2em;
+        }
+
+        .dashboard-section img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        #tank {
+            width: 50px;
+            height: 100px;
+            background-color: #3498db;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #water {
+            width: 100%;
+            height: 0;
+            background-color: #87CEEB; /* Color del agua */
+            position: absolute;
+            bottom: 0;
+            transition: height 0.5s; /* Agregamos una transición para que sea más suave el cambio */
+        }
+
+        .thermometer {
+            position: relative;
+            width: 20px;
+            height: 100px;
+            margin: 20px auto;
+        }
+
+        .thermometer .bulb {
+            width: 20px;
+            height: 20px;
+            background-color: #ff0000; /* Red color for the bulb */
+            border-radius: 50%;
+        }
+
+        .thermometer .tube {
+            width: 10px;
+            height: 80px;
+            background-color: #fff; /* White color for the thermometer tube */
+            position: absolute;
+            top: 20px;
+            left: 5px;
+        }
+
+        .thermometer .filler {
+            width: 10px;
+            background-color: #ff0000; /* Red color for the filled part of the thermometer tube */
+            position: absolute;
+            bottom: 0;
+        }
+
+        .led {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ff0000; /* Default color is red (off) */
+            margin: 20px auto;
+        }
+
+        .led.on {
+            background-color: #00ff00; /* Green color indicates on */
+        }
+    </style>
+
     <link rel="stylesheet" href="styles.css">
     <!-- Agregado el enlace para la fuente Roboto -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
@@ -14,7 +118,7 @@
     </h1>
     <div class="dashboard-container">
         <div class="dashboard-section" id="section1">
-            <h2>DataHora</h2>
+            <h2>Hora</h2>
             <p id="dataHora">Esperando datos...</p>
         </div>
 
@@ -100,7 +204,7 @@
                     document.getElementById('distancia').textContent = `${data.distancia} cm`;
                     document.getElementById('temperatura').textContent = `${data.temperatura} °C`;
                     document.getElementById('humedad').textContent = `${data.humedad}%`;
-                    document.getElementById('humedadTierra').textContent = `${data.humedadTierra}%`;
+                    document.getElementById('humedadTierra').textContent = `${data.humedad_suelo}%`;
 
                     // Actualiza la altura del agua en el tanque según la distancia
                     updateTank(data.distancia);
