@@ -14,12 +14,23 @@ app.post("/actualizar", (req, res) => {
   const minuto = req.body.minuto;
   const segundo = req.body.segundo;
   const distancia = req.body.distancia;
+  const temperatura = req.body.temperatura;
+  const humedad = req.body.humedad;
+  const humedad_suelo = req.body.humedad_suelo;
+  const status = req.body.status;
   const dataHora = `${hora}:${minuto}:${segundo}`;
 
-  sensorData = { tiempo: dataHora, distancia: distancia };
+  sensorData = {
+    tiempo: dataHora,
+    distancia: distancia,
+    temperatura: temperatura,
+    humedad: humedad,
+    humedad_suelo: humedad_suelo,
+    status: status
+  };
 
   // Puedes hacer lo que quieras con los datos aquí
-  console.log(`Datos recibidos - Hora: ${dataHora}, Distancia: ${distancia} cm`);
+  console.log(`Datos recibidos - Hora: ${dataHora}, Distancia: ${distancia} cm, Temperatura: ${temperatura} °C, Humedad: ${humedad}%, Humedad del suelo: ${humedad_suelo}%, status: ${status}`);
 
   // Responde con una respuesta simple
   res.send("Datos recibidos correctamente");
