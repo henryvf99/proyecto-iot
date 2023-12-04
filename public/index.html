@@ -4,82 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualización de Datos</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom right, #2c3e50, #1f2b38);
-            color: #fff;
-            text-align: center;
-        }
-
-        h1 {
-            color: #3498db;
-        }
-
-        #sensorTable {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        #sensorTable th, #sensorTable td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        #sensorData {
-            font-size: 1.2em;
-        }
-
-        #tank {
-            width: 50px;
-            height: 100px;
-            background-color: #3498db;
-            margin: 20px auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #water {
-            width: 100%;
-            height: 0;
-            background-color: #87CEEB; /* Color del agua */
-            position: absolute;
-            bottom: 0;
-            transition: height 0.5s; /* Agregamos una transición para que sea más suave el cambio */
-        }
-
-        #sensorImage {
-            width: 50%;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
     <!-- Agregado el enlace para la fuente Roboto -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
 </head>
 <body>
-    <h1>Datos del Sensor</h1>
+    <h1>
+        Visualización de Datos
+    </h1>
+    <div class="dashboard-container">
+        <div class="dashboard-section" id="section1">
+            <h2>DataHora</h2>
+            <p id="dataHora">Esperando datos...</p>
+        </div>
 
-    <table id="sensorTable">
-        <tr>
-            <th>Tiempo</th>
-            <th>Distancia (cm)</th>
-        </tr>
-        <tr id="sensorData">
-            <td colspan="2">Esperando datos...</td>
-        </tr>
-    </table>
+        <div class="dashboard-section" id="section2">
+            <h2>Distancia</h2>
+            <p id="distancia">Esperando datos...</p>
+            <div id="tank">
+                <div id="water"></div>
+            </div>
+        </div>
 
-    <div id="tank">
-        <div id="water"></div>
+        <div class="dashboard-section" id="section3">
+            <h2>Temperatura</h2>
+            <div class="thermometer">
+                <div class="bulb"></div>
+                <div class="tube"></div>
+                <div class="filler" id="temperatureFiller"></div>
+            </div>
+            <p id="temperatura">Esperando datos...</p>
+        </div>
+
+        <div class="dashboard-section" id="section4">
+            <h2>Humedad</h2>
+            <p id="humedad">Esperando datos...</p>
+        </div>
+
+        <div class="dashboard-section" id="section5">
+            <h2>Humedad del Suelo</h2>
+            <p id="humedadTierra">Esperando datos...</p>
+        </div>
+
+        <div class="dashboard-section" id="section6">
+            <h2>Estado del LED</h2>
+            <div class="led" id="ledStatus"></div>
+        </div>
     </div>
 
-    <img id="sensorImage" src="https://www.eneka.com.uy/images/stories/virtuemart/product/mk0005.jpg" alt="Imagen del sensor">
+    <!-- Include an alarm sound -->
+    <audio id="alarmSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
 
     <script>
         function updateTank(distance) {
@@ -93,16 +67,49 @@
             document.getElementById('water').style.height = `${waterHeight}px`;
         }
 
+        function updateThermometer(temperature) {
+            const maxTemperature = 30; // Temperatura máxima para el termómetro
+            const fillerHeight = (temperature / maxTemperature) * 80; // Calcula la parte llena del termómetro
+
+            // Actualiza la altura de la parte llena del termómetro según la temperatura
+            document.getElementById('temperatureFiller').style.height = `${fillerHeight}px`;
+        }
+
+        function updateLedStatus(status) {
+            const ledElement = document.getElementById('ledStatus');
+            // Actualiza el estado del LED según el valor de status
+            ledElement.classList.toggle('on', status === 1);
+
+            // Reproduce o pausa el sonido de la alarma según el estado del LED
+            const alarmSound = document.getElementById('alarmSound');
+            if (status === 1 && alarmSound.paused) {
+                alarmSound.play();
+            } else if (status !== 1 && !alarmSound.paused) {
+                alarmSound.pause();
+                alarmSound.currentTime = 0; // Reinicia el audio al principio
+            }
+        }
+
         function fetchData() {
             // Realiza una petición GET al servidor para obtener los datos
             fetch('/datos')
                 .then(response => response.json())
                 .then(data => {
-                    // Actualiza el contenido de las celdas de la tabla
-                    document.getElementById('sensorData').innerHTML = `<td>${data.tiempo}</td><td>${data.distancia}</td>`;
+                    // Actualiza el contenido de cada sección
+                    document.getElementById('dataHora').textContent = data.tiempo;
+                    document.getElementById('distancia').textContent = `${data.distancia} cm`;
+                    document.getElementById('temperatura').textContent = `${data.temperatura} °C`;
+                    document.getElementById('humedad').textContent = `${data.humedad}%`;
+                    document.getElementById('humedadTierra').textContent = `${data.humedadTierra}%`;
 
-                    // Actualiza el nivel del agua en el tanque
+                    // Actualiza la altura del agua en el tanque según la distancia
                     updateTank(data.distancia);
+
+                    // Actualiza el termómetro según la temperatura
+                    updateThermometer(data.temperatura);
+
+                    // Actualiza el estado del LED según el valor de status
+                    updateLedStatus(data.status);
                 })
                 .catch(error => {
                     console.error('Error al obtener datos:', error);
@@ -112,7 +119,7 @@
         // Actualiza los datos cada segundo
         setInterval(fetchData, 1000);
 
-        // Realiza la primera llamada a fetchData para obtener los datos inmediatamente
+        // Llamada inicial para obtener datos inmediatamente
         fetchData();
     </script>
 </body>
